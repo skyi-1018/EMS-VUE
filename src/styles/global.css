@@ -1,0 +1,67 @@
+/* @/styles/global.css */
+:root {
+    --el-border-radius-base: 8px;
+}
+.el-popper {
+  background-color: rgba(255, 255, 255, 0.65) !important;
+  backdrop-filter: blur(5px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: var(--el-border-radius-base);
+}
+.el-picker-panel {
+    background-color: rgba(255, 255, 255, 0.65) !important;
+}
+.el-picker-panel__sidebar {
+    background-color: rgba(255, 255, 255, 0) !important;
+}
+.el-picker-panel__footer {
+    background-color: rgba(255, 255, 255, 0) !important;
+}
+.el-picker-panel .el-time-panel {
+    background-color: rgba(255, 255, 255, 0.65) !important;
+    backdrop-filter: blur(5px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: var(--el-border-radius-base);
+}
+.el-popper.is-dark {
+    color: black;
+    border: 1px solid #e4e7ed;
+    box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.08);
+}
+.el-pagination {
+    --el-pagination-border-radius: var(--el-border-radius-base);
+}
+.el-table {
+    border-radius: 16px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+}
+.el-message--error {
+    background-color: #fef0f099;
+    backdrop-filter: blur(5px);
+}
+.el-message--success {
+    background-color: #f0f9eb99;
+    backdrop-filter: blur(5px);
+}
+.el-message--warning {
+    background-color: #fdf6ec99;
+    backdrop-filter: blur(5px);
+}
+.el-message--info {
+    background-color: #f4f4f599;
+    backdrop-filter: blur(5px);
+}
+.el-message {
+    border-radius: 14px;
+    z-index: 9999 !important;
+}
+.el-loading-mask { 
+    background-color: rgba(255, 255, 255, 0.65) !important;
+    backdrop-filter: blur(5px);
+    z-index: 1990;
+}
+.el-card {
+    border-radius: 16px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+    border: 0;
+}
