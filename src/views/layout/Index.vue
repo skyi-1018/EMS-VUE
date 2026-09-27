@@ -25,9 +25,9 @@ const currentRoute = computed(() => route)
               <router-view />
           </el-main>
           <el-footer style="text-align:center;padding:12px 0;color:#666;font-size:14px;">
-            © 2026 松福管理系统Java版V1.3 |
+            © 2026 企业管理系统Java版V1.3 |
             <el-link type="primary" :underline="false" style="margin-left:8px;font-size:14px;" href="/about">
-              关于松福管理系统
+              关于企业管理系统
             </el-link>
           </el-footer>
         </el-container>

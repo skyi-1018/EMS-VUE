@@ -39,7 +39,7 @@ const doLogout = async () => {
 
 <template>
     <div class="topbar">
-        <span class="title" @click="goTo('/')">松福管理系统</span>
+        <span class="title" @click="goTo('/')">企业管理系统</span>
         <div class="right-section">
             <span class="welcome">欢迎，{{ username }}</span>
             <el-button class="logout-btn" @click="handleLogout" ref="logoutBtnRef">退出登录</el-button>
