@@ -5,3 +5,14 @@ import request from '@/utils/request'
 export function getLogList(params) {
     return request.post('/logs/list', params)
 }
+
+// Excel导出
+export function excelExport(startDate, endDate) {
+    return request.get('/logs/export', {
+        params: {
+            startDate: startDate,
+            endDate: endDate
+        },
+        responseType: 'blob'
+    })
+}

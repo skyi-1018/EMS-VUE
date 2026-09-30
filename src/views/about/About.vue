@@ -81,11 +81,11 @@ onMounted(() => {
             <el-card class="info-card">
                 <template #header>
                     <div class="card-header">
-                        <span>关于企业管理系统</span>
+                        <span>关于松福管理系统</span>
                     </div>
                 </template>
                 <p>版本号：V1.3</p>
-                <p>制作人：一个人</p>
+                <p>制作人：黄毅</p>
                 <p>使用过程中出现问题，请及时记录出错时间并联系制作人</p>
             </el-card>
             <el-card>
