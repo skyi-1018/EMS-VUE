@@ -15,6 +15,7 @@ import { ElMessage } from "element-plus"
 import OperationLogPage from "@/views/operation-log/OperationLogPage.vue"
 import StatisticalChart from "@/views/report/StatisticalChart.vue"
 import About from "@/views/about/About.vue"
+import MaterialManage from "@/views/material/MaterialManage.vue"
 
 const routes = [
     {
@@ -81,6 +82,12 @@ const routes = [
         path: '/about',
         name: 'About',
         component: About,
+        meta: { requireAuth: true}
+    },
+    {
+        path: '/material-manage',
+        name: 'MaterialManage',
+        component: MaterialManage,
         meta: { requireAuth: true}
     }
 ]

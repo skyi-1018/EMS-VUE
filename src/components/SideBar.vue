@@ -31,6 +31,7 @@ const menuList = ref([
     { path: '/prepare-order-manage', name: '预备订单管理'},
     { path: '/order-manage', name: '订单管理'},
     { path: '/print-order', name: '订单打印'},
+    { path: '/material-manage', name: '材料管理' },
     { path: '/customer-manage', name: '客户管理', roles: [ROLE.ADMIN]},
     { path: '/statistical-chart', name: '统计图表', roles: [ROLE.ADMIN]},
     { path: '/operation-log', name: '日志记录', roles: [ROLE.ADMIN]},
