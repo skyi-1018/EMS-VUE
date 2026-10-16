@@ -489,10 +489,14 @@ onMounted(() => {
                     />
                 </el-form-item>
                 <el-form-item label="规格1" prop="spec1" v-if="orderForm.ABMode === false">
-                    <el-input v-model="orderForm.spec1" type="number" step="0.1" placeholder="请输入规格1" clearable @input="calcAmount"/>
+                    <el-input v-model="orderForm.spec1" type="number" step="0.1" placeholder="请输入规格1" clearable @input="calcAmount">
+                        <template #append>cm</template>
+                    </el-input>
                 </el-form-item>
                 <el-form-item label="规格2" prop="spec2"  v-if="orderForm.ABMode === false">
-                    <el-input v-model="orderForm.spec2" type="number" step="0.1" placeholder="请输入规格2" clearable @input="calcAmount"/>
+                    <el-input v-model="orderForm.spec2" type="number" step="0.1" placeholder="请输入规格2" clearable @input="calcAmount">
+                        <template #append>cm</template>
+                    </el-input>
                 </el-form-item>
                 <el-form-item label="数量" prop="quantity"  v-if="orderForm.ABMode === false">
                     <el-input v-model="orderForm.quantity" placeholder="请输入数量" type="number" step="1" clearable @input="calcAmount"/>
@@ -506,7 +510,9 @@ onMounted(() => {
                         :disabled="!orderForm.isSpecialUnitPrice"
                         clearable
                         @input="unitPriceChange"
-                    />
+                    >
+                        <template #append>元/m²</template>
+                    </el-input>
                     <el-checkbox v-model="orderForm.isSpecialUnitPrice" label="特殊单价" @change="updateUnitPrice"/>
                 </el-form-item>
                 <div class="ABCard" v-if="orderForm.ABMode === true">
@@ -514,16 +520,22 @@ onMounted(() => {
                         <el-form :model="orderForm" label-width="80px">
                             <h3 class="card-title">A面</h3>
                             <el-form-item label="规格1" prop="spec1A">
-                                <el-input v-model="orderForm.spec1A" type="number" step="0.1" placeholder="请输入规格1" clearable @input="calcAmountA"/>
+                                <el-input v-model="orderForm.spec1A" type="number" step="0.1" placeholder="请输入规格1" clearable @input="calcAmountA">
+                                    <template #append>cm</template>
+                                </el-input>
                             </el-form-item>
                             <el-form-item label="规格2" prop="spec2A">
-                                <el-input v-model="orderForm.spec2A" type="number" step="0.1" placeholder="请输入规格2" clearable @input="calcAmountA"/>
+                                <el-input v-model="orderForm.spec2A" type="number" step="0.1" placeholder="请输入规格2" clearable @input="calcAmountA">
+                                    <template #append>cm</template>
+                                </el-input>
                             </el-form-item>
                             <el-form-item label="数量" prop="quantityA">
                                 <el-input v-model="orderForm.quantityA" placeholder="请输入数量" type="number" step="1" clearable @input="calcAmountA"/>
                             </el-form-item>
                             <el-form-item label="总价" prop="amountA">
-                                <el-input v-model="orderForm.amountA" placeholder="请输入总价" type="number" step="0.01" disabled/>
+                                <el-input v-model="orderForm.amountA" placeholder="请输入总价" type="number" step="0.01" disabled>
+                                    <template #append>元</template>
+                                </el-input>
                             </el-form-item>
                         </el-form>
                     </div>
@@ -531,16 +543,22 @@ onMounted(() => {
                         <el-form :model="orderForm" label-width="80px">
                             <h3 class="card-title">B面</h3>
                             <el-form-item label="规格1" prop="spec1B">
-                                <el-input v-model="orderForm.spec1B" type="number" step="0.1" placeholder="请输入规格1" clearable @input="calcAmountB"/>
+                                <el-input v-model="orderForm.spec1B" type="number" step="0.1" placeholder="请输入规格1" clearable @input="calcAmountB">
+                                    <template #append>cm</template>
+                                </el-input>
                             </el-form-item>
                             <el-form-item label="规格2" prop="spec2B">
-                                <el-input v-model="orderForm.spec2B" type="number" step="0.1" placeholder="请输入规格2" clearable @input="calcAmountB"/>
+                                <el-input v-model="orderForm.spec2B" type="number" step="0.1" placeholder="请输入规格2" clearable @input="calcAmountB">
+                                    <template #append>cm</template>
+                                </el-input>
                             </el-form-item>
                             <el-form-item label="数量" prop="quantityB">
                                 <el-input v-model="orderForm.quantityB" placeholder="请输入数量" type="number" step="1" clearable @input="calcAmountB"/>
                             </el-form-item>
                             <el-form-item label="总价" prop="amountB">
-                                <el-input v-model="orderForm.amountB" placeholder="请输入总价" type="number" step="0.01" disabled/>
+                                <el-input v-model="orderForm.amountB" placeholder="请输入总价" type="number" step="0.01" disabled>
+                                    <template #append>元</template>
+                                </el-input>
                             </el-form-item>
                         </el-form>
                     </div>
@@ -554,7 +572,9 @@ onMounted(() => {
                         type="number" 
                         step="0.01" 
                         disabled
-                    />
+                    >
+                        <template #append>元</template>
+                    </el-input>
                 </el-form-item>
                 <el-form-item label="备注" prop="remark">
                     <el-input v-model="orderForm.remark" placeholder="请输入备注" clearable/>

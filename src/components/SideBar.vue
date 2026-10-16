@@ -1,4 +1,4 @@
-<!-- @/components/CommonCard.vue -->
+<!-- @/components/SideBar.vue -->
 <script setup>
 import { DArrowLeft, DArrowRight } from '@element-plus/icons-vue';
 import { ref, onMounted, onUnmounted, computed } from 'vue';

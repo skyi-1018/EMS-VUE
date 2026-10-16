@@ -511,10 +511,14 @@ onMounted(() => {
                     </el-autocomplete>
                 </el-form-item>
                 <el-form-item label="规格1" prop="spec1">
-                    <el-input v-model="prepareOrderForm.spec1" type="number" step="0.1" placeholder="请输入规格1" clearable @input="calcAmount"/>
+                    <el-input v-model="prepareOrderForm.spec1" type="number" step="0.1" placeholder="请输入规格1" clearable @input="calcAmount">
+                        <template #append>cm</template>
+                    </el-input>
                 </el-form-item>
                 <el-form-item label="规格2" prop="spec2">
-                    <el-input v-model="prepareOrderForm.spec2" type="number" step="0.1" placeholder="请输入规格2" clearable @input="calcAmount"/>
+                    <el-input v-model="prepareOrderForm.spec2" type="number" step="0.1" placeholder="请输入规格2" clearable @input="calcAmount">
+                        <template #append>cm</template>
+                    </el-input>
                 </el-form-item>
                 <el-form-item label="数量" prop="quantity" v-if="prepareOrderDialogType==='edit'">
                     <el-input v-model="prepareOrderForm.quantity" placeholder="请输入数量" type="number" step="1" clearable @input="calcAmount"/>
@@ -528,7 +532,9 @@ onMounted(() => {
                         :disabled="!prepareOrderForm.isSpecialUnitPrice"
                         clearable
                         @input="calcAmount"
-                    />
+                    >
+                        <template #append>元/m²</template>
+                    </el-input>
                     <el-checkbox v-model="prepareOrderForm.isSpecialUnitPrice" label="特殊单价" @change="updateUnitPrice"/>
                 </el-form-item>
                 <el-form-item label="总价" prop="amount" v-if="prepareOrderDialogType==='edit'">
@@ -538,7 +544,9 @@ onMounted(() => {
                         type="number" 
                         step="0.01" 
                         disabled
-                    />
+                    >
+                        <template #append>元</template>
+                    </el-input>
                 </el-form-item>
                 <el-form-item label="备注" prop="remark">
                     <el-input v-model="prepareOrderForm.remark" placeholder="请输入备注" clearable/>

@@ -1,6 +1,6 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue'
-import { Money, Tickets, Printer, ShoppingCart, Document, Avatar, TrendCharts, Calendar, Plus } from '@element-plus/icons-vue'
+import { Money, Tickets, Printer, ShoppingCart, Document, Avatar, TrendCharts, Calendar, Plus, Box } from '@element-plus/icons-vue'
 import { ROLE } from '@/utils/role'
 import { getStatMap } from '@/api/reports'
 
@@ -98,6 +98,10 @@ onMounted(() => {
                     <div class="quick-item" @click="$router.push('/print-order')">
                         <el-icon class="quick-icon"><Printer /></el-icon>
                         <div class="quick-text">订单打印</div>
+                    </div>
+                    <div class="quick-item" @click="$router.push('/material-manage')">
+                        <el-icon class="quick-icon"><Box /></el-icon>
+                        <div class="quick-text">材料管理</div>
                     </div>
                     <div class="quick-item" @click="$router.push('/customer-manage')" v-permission="ROLE.ADMIN">
                         <el-icon class="quick-icon"><Avatar /></el-icon>

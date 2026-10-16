@@ -603,7 +603,6 @@ onMounted(() => {
                     v-model:current-page="orderListParam.pageNum"
                     v-model:page-size="orderListParam.pageSize"
                     :page-sizes="[10, 20, 50, 100]"
-                    :page-size="10"
                     background
                     @size-change="loadOrderList"
                     @current-change="loadOrderList"
@@ -671,10 +670,14 @@ onMounted(() => {
                     </el-autocomplete>
                 </el-form-item>
                 <el-form-item label="规格1" prop="spec1">
-                    <el-input v-model="orderForm.spec1" type="number" step="0.1" placeholder="请输入规格1" clearable @input="calcAmount"/>
+                    <el-input v-model="orderForm.spec1" type="number" step="0.1" placeholder="请输入规格1" clearable @input="calcAmount">
+                        <template #append>cm</template>
+                    </el-input>
                 </el-form-item>
                 <el-form-item label="规格2" prop="spec2">
-                    <el-input v-model="orderForm.spec2" type="number" step="0.1" placeholder="请输入规格2" clearable @input="calcAmount"/>
+                    <el-input v-model="orderForm.spec2" type="number" step="0.1" placeholder="请输入规格2" clearable @input="calcAmount">
+                        <template #append>cm</template>
+                    </el-input>
                 </el-form-item>
                 <el-form-item label="数量" prop="quantity">
                     <el-input v-model="orderForm.quantity" placeholder="请输入数量" type="number" step="1" clearable @input="calcAmount"/>
@@ -688,7 +691,9 @@ onMounted(() => {
                         :disabled="!orderForm.isSpecialUnitPrice"
                         clearable
                         @input="calcAmount"
-                    />
+                    >
+                        <template #append>元/m²</template>
+                    </el-input>
                     <el-checkbox v-model="orderForm.isSpecialUnitPrice" label="特殊单价" @change="updateUnitPrice"/>
                 </el-form-item>
                 <el-form-item label="总价" prop="amount">
@@ -698,7 +703,9 @@ onMounted(() => {
                         type="number" 
                         step="0.01" 
                         disabled
-                    />
+                    >
+                        <template #append>元</template>
+                    </el-input>
                 </el-form-item>
                 <el-form-item label="备注" prop="remark">
                     <el-input v-model="orderForm.remark" placeholder="请输入备注" clearable/>
