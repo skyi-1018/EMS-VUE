@@ -62,7 +62,7 @@ const doLogout = async () => {
     top: 0;
     left: 0;
     z-index: 999;
-    backdrop-filter: blur(10px);
+    backdrop-filter: blur(5px);
     box-sizing: border-box;
 }
 
