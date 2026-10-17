@@ -16,6 +16,7 @@ import OperationLogPage from "@/views/operation-log/OperationLogPage.vue"
 import StatisticalChart from "@/views/report/StatisticalChart.vue"
 import About from "@/views/about/About.vue"
 import MaterialManage from "@/views/material/MaterialManage.vue"
+import ProfitManage from "@/views/profit/ProfitManage.vue"
 
 const routes = [
     {
@@ -89,7 +90,13 @@ const routes = [
         name: 'MaterialManage',
         component: MaterialManage,
         meta: { requireAuth: true}
-    }
+    },
+    {
+        path: '/profit-manage',
+        name: 'ProfitManage',
+        component: ProfitManage,
+        meta: { requireAuth: true, roles: [ROLE.ADMIN]}
+    },
 ]
 
 const router = createRouter({

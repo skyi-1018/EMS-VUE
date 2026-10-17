@@ -33,6 +33,7 @@ const menuList = ref([
     { path: '/print-order', name: '订单打印'},
     { path: '/material-manage', name: '材料管理' },
     { path: '/customer-manage', name: '客户管理', roles: [ROLE.ADMIN]},
+    { path: '/profit-manage', name: '利润统计', roles: [ROLE.ADMIN]},
     { path: '/statistical-chart', name: '统计图表', roles: [ROLE.ADMIN]},
     { path: '/operation-log', name: '日志记录', roles: [ROLE.ADMIN]},
 ])
@@ -134,7 +135,7 @@ onUnmounted(() => {
     height: calc(100vh - 92px);
     width: 240px;
     background: rgba(255, 255, 255, 0.5);
-    backdrop-filter: blur(10px);
+    backdrop-filter: blur(5px);
     border-radius: 16px;
     box-shadow: 
         -4px -4px 12px rgba(255, 255, 255, 0.8),
