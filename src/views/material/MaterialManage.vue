@@ -1,4 +1,7 @@
 <script setup>
+// ============================================================
+// 1. 依赖导入
+// ============================================================
 import { ref, reactive, onMounted, watch } from 'vue'
 import ZoomDialog from '@/components/ZoomDialog.vue'
 import CommonCard from '@/components/CommonCard.vue'
@@ -15,423 +18,17 @@ import ConfirmDialog from '@/components/ConfirmDialog.vue'
 import { ROLE } from '@/utils/role'
 import { hasPermission } from '@/utils/global'
 
+// ============================================================
+// 2. 全局基础状态
+// ============================================================
 const processList = ref([])
-
 const cardRefs = {}
 const confirmDialogRef = ref(null)
 const tabPage = ref('first')
 
-const addMaterialBtnRef = ref(null)
-const materialName = ref('')
-const materialList = ref([])
-const materialForm = ref({
-    id: null,
-    name: '',
-    unit: '',
-    remark: ''
-})
-const materialIsAdd = ref(false)
-const materialFormRef = ref(null)
-const materialFormRules = reactive({
-    name: [
-        { required: true, message: '请输入材料名', trigger: 'blur' }
-    ],
-    unit: [
-        { required: true, message: '请输入单位', trigger: 'change'}
-    ],
-})
-
-const filmInFormRules = reactive({
-    inDate: [
-        { required: true, message: '请输入进料日期', trigger: 'change' }
-    ],
-    filmId: [
-        { required: true, message: '请选择膜类型', trigger: 'change'}
-    ],
-    spec: [
-        { required: true, message: '请输入规格', trigger: 'change'}
-    ],
-    weight: [
-        { required: true, message: '请输入重量', trigger: 'change'}
-    ],
-    unitPrice: [
-        { required: true, message: '请输入单价', trigger: 'change'}
-    ],
-    amount: [
-        { required: true, message: '请输入金额', trigger: 'change'}
-    ],
-})
-
-const materialDialogVisible = ref(false)
-const materialDialogTitle = ref('新增材料')
-const materialDialogSourceRect = reactive({ x: 0, y: 0, width: 240, height: 120 })
-const materialDelBtnRef = ref(null)
-
-const materialInParam = ref({
-    materialId: null,
-    startDate: '',
-    endDate: '',
-    pageNum: 1,
-    pageSize: 10,
-    dateRange: ''
-})
-
-const shortcuts = [
-  {
-    text: '最近一周',
-    value: () => {
-      const end = new Date()
-      const start = new Date()
-      start.setTime(start.getTime() - 3600 * 1000 * 24 * 7)
-      return [start, end]
-    },
-  },
-  {
-    text: '最近一个月',
-    value: () => {
-      const end = new Date()
-      const start = new Date()
-      start.setTime(start.getTime() - 3600 * 1000 * 24 * 30)
-      return [start, end]
-    },
-  },
-  {
-    text: '最近三个月',
-    value: () => {
-      const end = new Date()
-      const start = new Date()
-      start.setTime(start.getTime() - 3600 * 1000 * 24 * 90)
-      return [start, end]
-    },
-  },
-]
-
-const materialInList = ref([])
-const materialInTableLoading = ref(false)
-const materialInTotal = ref(null)
-const materialInFormRef = ref(null)
-const materialInForm = ref({
-    id: null,
-    inDate: '',
-    materialId: null,
-    unitPrice: null,
-    quantity: null,
-    amount: null,
-    remark: ''
-})
-
-const materialInDialogVisible = ref(false)
-const materialInDialogSourceRect = reactive({ x: 0, y: 0, width: 240, height: 120 })
-const materialInFormRules = reactive({
-    inDate: [
-        { required: true, message: '请选择进料日期', trigger: 'change' }
-    ],
-    materialId: [
-        { required: true, message: '请选择材料', trigger: 'change' }
-    ],
-    unitPrice: [
-        { required: true, message: '请输入单价', trigger: 'change' }
-    ],
-    quantity: [
-        { required: true, message: '请输入数量', trigger: 'change'}
-    ],
-    amount: [
-        { required: true, message: '请输入金额', trigger: 'change' }
-    ],
-})
-
-const materialInAddDialogVisible = ref(false)
-const materialInAddDialogSourceRect = reactive({ x: 0, y: 0, width: 240, height: 120 })
-const addMaterialInBtnRef = ref(null)
-const materialInBatchAddForm = ref([
-    {
-        inDate: dayjs().format('YYYY-MM-DD'),
-        materialId: null,
-        unitPrice: null,
-        quantity: null,
-        amount: null,
-        remark: ''
-    },
-])
-const materialInAddFormRules = reactive({
-    inDate: [
-        { required: true, message: '请选择进料日期', trigger: 'change' }
-    ],
-    materialId: [
-        { required: true, message: '请选择材料', trigger: 'change' }
-    ],
-    unitPrice: [
-        { required: true, message: '请输入单价', trigger: 'change' }
-    ],
-    quantity: [
-        { required: true, message: '请输入数量', trigger: 'change'}
-    ],
-    amount: [
-        { required: true, message: '请输入金额', trigger: 'change' }
-    ],
-})
-
-const editFilmFormRules = reactive({
-    processId: [
-        { required: true, message: '请选择关联工艺', trigger: 'change' }
-    ],
-    name: [
-        { required: true, message: '请输入膜名', trigger: 'change' }
-    ],
-    scale: [
-        { required: true, message: '请输入系数', trigger: 'change' }
-    ],
-})
-
-const materialInDelBtnRef = ref(null)
-const filmInDelBtnRef = ref(null)
-
-const materialStockFormRules = reactive({
-    month: [
-        { required: true, message: '请选择月份', trigger: 'change' }
-    ],
-    materialId: [
-        { required: true, message: '请选择材料', trigger: 'change' }
-    ],
-    quantity: [
-        { required: true, message: '请输入数量', trigger: 'change'}
-    ]
-})
-
-const materialStockTableLoading = ref(false)
-const materialStockTotal = ref(null)
-const materialStockList = ref([])
-const materialStockFormRef = ref(null)
-const materialStockParam = ref({
-    materialId: null,
-    month: '',
-    pageNum: 1,
-    pageSize: 10
-})
-
-const materialStockDialogVisible = ref(false)
-const materialStockDialogSourceRect = reactive({ x: 0, y: 0, width: 240, height: 120 })
-const materialStockForm = ref({
-    id: null,
-    month: '',
-    materialId: null,
-    quantity: null,
-    remark: ''
-})
-const materialStockBatchAddForm = ref([
-    {
-        month: dayjs().format('YYYY-MM-01'),
-        materialId: null,
-        quantity: null,
-        remark: ''
-    },
-])
-const materialStockAddDialogVisible = ref(false)
-const materialStockAddDialogSourceRect = reactive({ x: 0, y: 0, width: 240, height: 120 })
-const materialStockAddFormRules = reactive({
-    month: [
-        { required: true, message: '请选择月份', trigger: 'change' }
-    ],
-    materialId: [
-        { required: true, message: '请选择材料', trigger: 'change' }
-    ],
-    quantity: [
-        { required: true, message: '请输入数量', trigger: 'change'}
-    ],
-})
-const addMaterialStockBtnRef = ref(null)
-const materialStockDelBtnRef = ref(null)
-
-const materialUseDelBtnRef = ref(null)
-const materialUseParam = ref({
-    materialId: null,
-    month: '',
-    pageNum: 1,
-    pageSize: 10,
-})
-const materialUseList = ref([])
-const materialUseTableLoading = ref(false)
-const materialUseTotal = ref(null)
-
-const calcMaterialUseBtnRef = ref(null)
-const materialUseIsAdd = ref(true)
-const addMaterialUseBtnRef = ref(null)
-const materialUseFormRef = ref(null)
-const materialUseDialogVisible = ref(false)
-const materialUseDialogTitle = ref('新增用料')
-const materialUseDialogSourceRect = reactive({ x: 0, y: 0, width: 240, height: 120 })
-const materialUseFormRules = reactive({
-    month: [
-        { required: true, message: '请选择月份', trigger: 'change' }
-    ],
-    materialId: [
-        { required: true, message: '请选择材料', trigger: 'change' }
-    ],
-    unitPrice: [
-        { required: true, message: '请输入单价', trigger: 'change' }
-    ],
-    quantity: [
-        { required: true, message: '请输入数量', trigger: 'change'}
-    ],
-    amount: [
-        { required: true, message: '请输入金额', trigger: 'change'}
-    ]
-})
-const materialUseForm = ref({
-    id: null,
-    month: '',
-    materialId: null,
-    unitPrice: null,
-    quantity: null,
-    amount: null,
-    remark: ''
-})
-
-const materialUseCalcDialogVisible = ref(false)
-const materialUseCalcDialogSourceRect = reactive({ x: 0, y: 0, width: 240, height: 120 })
-const materialUseCalcForm = ref({
-    month: dayjs().format('YYYY-MM'),
-})
-const calcBtnRef = ref(null)
-
-const filmList = ref([])
-const filmInParam = ref({
-    filmId: null,
-    thickness: null,
-    spec: null,
-    startDate: '',
-    endDate: '',
-    pageNum: 1,
-    pageSize: 10,
-    dateRange: '',
-})
-const filmInList = ref([])
-const filmInTableLoading = ref(false)
-const filmInTotal = ref(null)
-const filmInDialogVisible = ref(false)
-const filmInDialogSourceRect = reactive({ x: 0, y: 0, width: 240, height: 120 })
-const filmInFormRef = ref(null)
-const filmInForm = ref({
-    id: null,
-    inDate: dayjs().format('YYYY-MM-DD'),
-    filmId: null,
-    thickness: null,
-    spec: null,
-    weight: null,
-    unitPrice: null,
-    amount: null,
-    remark: ''
-})
-
-const filmDialogVisible = ref(false)
-const filmDialogSourceRect = reactive({ x: 0, y: 0, width: 240, height: 120 })
-const newFilmForm = ref({
-    processId: null,
-    name: '',
-    scale: null,
-    remark: ''
-})
-const editFilmDialogVisible = ref(false)
-const editFilmDialogSourceRect = reactive({ x: 0, y: 0, width: 240, height: 120 })
-const editFilmForm = ref({
-    id: null,
-    processId: null,
-    name: '',
-    scale: null,
-    remark: ''
-})
-const filmTypeManageBtnRef = ref(null)
-
-const filmInAddForm = ref([
-    {
-        inDate: dayjs().format('YYYY-MM-DD'),
-        filmId: null,
-        thickness: null,
-        spec: null,
-        weight: null,
-        unitPrice: null,
-        amount: null,
-        remark: ''
-    },
-])
-
-const clearFilmInAddForm = () => {
-    filmInAddForm.value = [
-        {
-            inDate: dayjs().format('YYYY-MM-DD'),
-            filmId: null,
-            thickness: null,
-            spec: null,
-            weight: null,
-            unitPrice: null,
-            amount: null,
-            remark: ''
-        },
-    ]
-}
-
-
-
-
-
-
-const filmUseParam = ref({
-    filmId: null,
-    month: '',
-    pageNum: 1,
-    pageSize: 10,
-})
-
-const filmUseList = ref([])
-
-const filmUseTableLoading = ref(false)
-const filmUseTotal = ref(null)
-const filmUseDialogVisible = ref(false)
-const filmUseDialogTitle = ref('新增膜用料')
-const filmUseDialogSourceRect = reactive({ x: 0, y: 0, width: 240, height: 120 })
-const filmUseForm = ref({
-    id: null,
-    month: '',
-    filmId: null,
-    unitPrice: null,
-    quantity: null,
-    amount: null,
-    remark: ''
-})
-const filmUseFormRules = reactive({
-    month: [
-        { required: true, message: '请选择月份', trigger: 'change' }
-    ],
-    filmId: [
-        { required: true, message: '请选择电影', trigger: 'change' }
-    ],
-    unitPrice: [
-        { required: true, message: '请输入单价', trigger: 'change' }
-    ],
-    quantity: [
-        { required: true, message: '请输入数量', trigger: 'change'}
-    ],
-    amount: [
-        { required: true, message: '请输入金额', trigger: 'change'}
-    ]
-})
-const filmUseFormRef = ref(null)
-
-const filmUseCalcDialogVisible = ref(false)
-const filmUseCalcDialogSourceRect = reactive({ x: 0, y: 0, width: 240, height: 120 })
-const filmUseCalcForm = ref({
-    month: dayjs().format('YYYY-MM'),
-})
-
-const filmUseCalcBtnRef = ref(null)
-const addFilmUseBtnRef = ref(null)
-const filmUseIsAdd = ref(true)
-const filmUseDelBtnRef = ref(null)
-const calcFilmUseBtnRef = ref(null)
-const editFilmFormRef = ref(null)
-
-
-
+// ============================================================
+// 3. 通用工具函数
+// ============================================================
 // 设置卡片引用
 const setCardRef = (id, el) => {
     if (el) cardRefs[id] = el
@@ -478,18 +75,68 @@ const calcFilmInAmount = (item) => {
     item.amount = item.weight * item.unitPrice
 }
 
+// ============================================================
+// 4. 日期快捷选项
+// ============================================================
+const shortcuts = [
+  {
+    text: '最近一周',
+    value: () => {
+      const end = new Date()
+      const start = new Date()
+      start.setTime(start.getTime() - 3600 * 1000 * 24 * 7)
+      return [start, end]
+    },
+  },
+  {
+    text: '最近一个月',
+    value: () => {
+      const end = new Date()
+      const start = new Date()
+      start.setTime(start.getTime() - 3600 * 1000 * 24 * 30)
+      return [start, end]
+    },
+  },
+  {
+    text: '最近三个月',
+    value: () => {
+      const end = new Date()
+      const start = new Date()
+      start.setTime(start.getTime() - 3600 * 1000 * 24 * 90)
+      return [start, end]
+    },
+  },
+]
 
+// ============================================================
+// 5. 材料模块（Material）
+// ============================================================
+// ---------- 5.1 响应式状态 ----------
+const addMaterialBtnRef = ref(null)
+const materialName = ref('')
+const materialList = ref([])
+const materialForm = ref({
+    id: null,
+    name: '',
+    unit: '',
+    remark: ''
+})
+const materialIsAdd = ref(false)
+const materialFormRef = ref(null)
+const materialFormRules = reactive({
+    name: [
+        { required: true, message: '请输入材料名', trigger: 'blur' }
+    ],
+    unit: [
+        { required: true, message: '请输入单位', trigger: 'change'}
+    ],
+})
+const materialDialogVisible = ref(false)
+const materialDialogTitle = ref('新增材料')
+const materialDialogSourceRect = reactive({ x: 0, y: 0, width: 240, height: 120 })
+const materialDelBtnRef = ref(null)
 
-// 动态加载页面
-const loadPage = (name) => {
-    if (name == 'first') loadMaterialList()
-    else if (name == 'second') loadMaterialInList()
-    else if (name == 'third') loadMaterialStockList()
-    else if (name == 'fourth') loadFilmInList()
-    else if (name == 'fifth') loadMaterialUseList()
-    else if (name == 'sixth') loadFilmUseList()
-}
-
+// ---------- 5.2 表单操作 ----------
 // 清空materialForm
 const clearMaterialForm = () => {
     materialForm.value = {
@@ -503,123 +150,7 @@ const clearMaterialForm = () => {
     }
 }
 
-// 清空materialInForm
-const clearMaterialInForm = () => {
-    materialInForm.value = {
-        id: null,
-        inDate: '',
-        materialId: null,
-        unitPrice: null,
-        quantity: null,
-        amount: null,
-        remark: ''
-    }
-    if (materialInFormRef.value) {
-        materialInFormRef.value.clearValidate()
-    }
-}
-
-// 清空materialStockForm
-const clearMaterialStockForm = () => {
-    materialStockForm.value = {
-        id: null,
-        month: '',
-        materialId: null,
-        quantity: null,
-        remark: ''
-    }
-    if (materialStockFormRef.value) {
-        materialStockFormRef.value.clearValidate()
-    }
-}
-
-// 清空materialUseForm
-const clearMaterialUseForm = () => {
-    materialUseForm.value = {
-        id: null,
-        month: '',
-        materialId: null,
-        unitPrice: null,
-        quantity: null,
-        amount: null,
-        remark: ''
-    }
-    if (materialUseFormRef.value) {
-        materialUseFormRef.value.clearValidate()
-    }
-}
-
-// 清空filmUseForm
-const clearFilmUseForm = () => {
-    filmUseForm.value = {
-        id: null,
-        month: '',
-        filmId: null,
-        unitPrice: null,
-        quantity: null,
-        amount: null,
-        remark: ''
-    }
-    if (filmUseFormRef.value) {
-        filmUseFormRef.value.clearValidate()
-    }
-}
-
-// 清空materialInBatchAddForm
-const clearMaterialInBatchAddForm = () => {
-    materialInBatchAddForm.value = [
-        {
-            inDate: dayjs().format('YYYY-MM-DD'),
-            materialId: null,
-            unitPrice: null,
-            quantity: null,
-            amount: null,
-            remark: ''
-        },
-    ]
-}
-
-// 清空materialStockBatchAddForm
-const clearMaterialStockBatchAddForm = () => {
-    materialStockBatchAddForm.value = [
-        {
-            month: dayjs().format('YYYY-MM-01'),
-            materialId: null,
-            quantity: null,
-            remark: ''
-        },
-    ]
-}
-
-// 清空filmInParam
-const clearFilmInParam = () => {
-    filmInParam.value = {
-        filmId: null,
-        thickness: null,
-        spec: null,
-        startDate: '',
-        endDate: '',
-        pageNum: 1,
-        pageSize: 10,
-        dateRange: '',
-    }
-    loadFilmInList()
-}
-
-// 清空newFilmForm
-const clearNewFilmForm = () => {
-    newFilmForm.value = {
-        processId: null,
-        name: '',
-        scale: null,
-        remark: ''
-    }
-}
-
-const filmInAddDialogVisible = ref(false)
-const filmInAddDialogSourceRect = reactive({ x: 0, y: 0, width: 240, height: 120 })
-const addFilmInBtnRef = ref(null)
-
+// ---------- 5.3 交互事件 ----------
 // 点击新增材料按钮
 const handleAddMaterial = () => {
     materialIsAdd.value = true
@@ -655,7 +186,7 @@ const handleRowClick = async (item, event) => {
     }
 
     const cardEl = cardRefs[item.id]
-    const rect = cardEl && cardEl.getBoundingClientRect()
+    const rect = cardEl && cardEl.getBoundingClientRect
         ? cardEl.getBoundingClientRect()
         : event.currentTarget.getBoundingClientRect()
 
@@ -667,6 +198,155 @@ const handleRowClick = async (item, event) => {
     materialDialogVisible.value = true
 }
 
+// 材料弹窗删除按钮点击
+const handleDeleteMaterial = (name) => {
+    const rect = getElementRect(materialDelBtnRef.value)
+    confirmDialogRef.value.open({
+        message: `确定删除该材料"${name}"吗？`,
+        sourceRect: rect || defaultRect(200, 100),
+        onConfirm: doDeleteMaterial
+    })
+}
+
+// ---------- 5.4 网络请求 ----------
+// 网络请求：获取材料列表
+const loadMaterialList = async () => {
+    const res = await getMaterialList(materialName.value)
+    materialList.value = res.data
+}
+
+// 网络请求：新增材料
+const doAddMaterial = async () => {
+    await addMaterial(materialForm.value)
+    ElMessage.success('添加成功')
+    materialDialogVisible.value = false
+    loadMaterialList()
+}
+
+// 网络请求：修改材料
+const doUpdateMaterial = async () => {
+    await updateMaterial(materialForm.value)
+    ElMessage.success('修改成功')
+    materialDialogVisible.value = false
+    loadMaterialList()
+}
+
+// 网络请求：删除材料
+const doDeleteMaterial = async () => {
+    await deleteMaterialById(materialForm.value.id)
+    ElMessage.success('删除成功')
+    materialDialogVisible.value = false
+    loadMaterialList()
+}
+
+// ============================================================
+// 6. 材料进料模块（MaterialIn）
+// ============================================================
+// ---------- 6.1 响应式状态 ----------
+const materialInParam = ref({
+    materialId: null,
+    startDate: '',
+    endDate: '',
+    pageNum: 1,
+    pageSize: 10,
+    dateRange: ''
+})
+const materialInList = ref([])
+const materialInTableLoading = ref(false)
+const materialInTotal = ref(null)
+const materialInFormRef = ref(null)
+const materialInForm = ref({
+    id: null,
+    inDate: '',
+    materialId: null,
+    unitPrice: null,
+    quantity: null,
+    amount: null,
+    remark: ''
+})
+const materialInDialogVisible = ref(false)
+const materialInDialogSourceRect = reactive({ x: 0, y: 0, width: 240, height: 120 })
+const materialInFormRules = reactive({
+    inDate: [
+        { required: true, message: '请选择进料日期', trigger: 'change' }
+    ],
+    materialId: [
+        { required: true, message: '请选择材料', trigger: 'change' }
+    ],
+    unitPrice: [
+        { required: true, message: '请输入单价', trigger: 'change' }
+    ],
+    quantity: [
+        { required: true, message: '请输入数量', trigger: 'change'}
+    ],
+    amount: [
+        { required: true, message: '请输入金额', trigger: 'change' }
+    ],
+})
+const materialInAddDialogVisible = ref(false)
+const materialInAddDialogSourceRect = reactive({ x: 0, y: 0, width: 240, height: 120 })
+const addMaterialInBtnRef = ref(null)
+const materialInBatchAddForm = ref([
+    {
+        inDate: dayjs().format('YYYY-MM-DD'),
+        materialId: null,
+        unitPrice: null,
+        quantity: null,
+        amount: null,
+        remark: ''
+    },
+])
+const materialInAddFormRules = reactive({
+    inDate: [
+        { required: true, message: '请选择进料日期', trigger: 'change' }
+    ],
+    materialId: [
+        { required: true, message: '请选择材料', trigger: 'change' }
+    ],
+    unitPrice: [
+        { required: true, message: '请输入单价', trigger: 'change' }
+    ],
+    quantity: [
+        { required: true, message: '请输入数量', trigger: 'change'}
+    ],
+    amount: [
+        { required: true, message: '请输入金额', trigger: 'change' }
+    ],
+})
+const materialInDelBtnRef = ref(null)
+
+// ---------- 6.2 表单操作 ----------
+// 清空materialInForm
+const clearMaterialInForm = () => {
+    materialInForm.value = {
+        id: null,
+        inDate: '',
+        materialId: null,
+        unitPrice: null,
+        quantity: null,
+        amount: null,
+        remark: ''
+    }
+    if (materialInFormRef.value) {
+        materialInFormRef.value.clearValidate()
+    }
+}
+
+// 清空materialInBatchAddForm
+const clearMaterialInBatchAddForm = () => {
+    materialInBatchAddForm.value = [
+        {
+            inDate: dayjs().format('YYYY-MM-DD'),
+            materialId: null,
+            unitPrice: null,
+            quantity: null,
+            amount: null,
+            remark: ''
+        },
+    ]
+}
+
+// ---------- 6.3 交互事件 ----------
 // 进料表格行点击
 const handleMaterialInRowClick = (row, column, event) => {
     let el = event && event.target
@@ -697,53 +377,12 @@ const handleSaveMaterialIn = async (formEl) => {
     }
 }
 
-// 库存确认保存按钮点击
-const handleSaveMaterialStock = async (formEl) => {
-    if (!formEl) return
-    try {
-        await formEl.validate()
-        doUpdateMaterialStock()
-    } catch (err) {
-        return
-    }
-}
-
 // 点击新增进料按钮
-const handleAddMaterialIn = () => { 
+const handleAddMaterialIn = () => {
     clearMaterialInBatchAddForm()
     const rect = getElementRect(addMaterialInBtnRef.value)
     Object.assign(materialInAddDialogSourceRect, rect || defaultRect(240, 120))
     materialInAddDialogVisible.value = true
-}
-
-// 点击新增月初库存按钮
-const handleAddMaterialStock = () => { 
-    clearMaterialStockBatchAddForm()
-    const rect = getElementRect(addMaterialStockBtnRef.value)
-    Object.assign(materialStockAddDialogSourceRect, rect || defaultRect(240, 120))
-    materialStockAddDialogVisible.value = true
-}
-
-// 点击新增用料按钮
-const handleAddMaterialUse = () => { 
-    clearMaterialUseForm()
-    materialUseForm.value.month = dayjs().format('YYYY-MM-01')
-    materialUseDialogTitle.value = '新增用料'
-    materialUseIsAdd.value = true
-    const rect = getElementRect(addMaterialUseBtnRef.value)
-    Object.assign(materialUseDialogSourceRect, rect || defaultRect(240, 120))
-    materialUseDialogVisible.value = true
-}
-
-// 点击新增膜用料按钮
-const handleAddFilmUse = () => { 
-    clearFilmUseForm()
-    filmUseForm.value.month = dayjs().format('YYYY-MM-01')
-    filmUseDialogTitle.value = '新增膜用料'
-    filmUseIsAdd.value = true
-    const rect = getElementRect(addFilmUseBtnRef.value)
-    Object.assign(filmUseDialogSourceRect, rect || defaultRect(240, 120))
-    filmUseDialogVisible.value = true
 }
 
 // 批量进料弹窗新增一行
@@ -758,192 +397,9 @@ const materialInAddDialogAddRow = () => {
     })
 }
 
-// 批量膜进料弹窗新增一行
-const filmInAddDialogAddRow = () => {
-    filmInAddForm.value.push({
-        inDate: dayjs().format('YYYY-MM-DD'),
-        filmId: null,
-        thickness: null,
-        spec: null,
-        weight: null,
-        unitPrice: null,
-        amount: null,
-        remark: ''
-    })
-}
-
-// 批量库存添加弹窗新增一行
-const materialStockAddDialogAddRow = () => {
-    materialStockBatchAddForm.value.push({
-        month: dayjs().format('YYYY-MM-01'),
-        materialId: null,
-        quantity: null,
-        remark: '',
-    })
-}
-
 // 批量添加进料弹窗确认提交按钮点击
 const handleSubmitMaterialIn = () => {
     doBatchAddMaterialIn()
-}
-
-// 库存表格行点击
-const handleMaterialStockRowClick = (row, column, event) => {
-    let el = event && event.target
-    while (el && el.tagName !== 'TR' && el.parentElement) {
-        el = el.parentElement
-    }
-    if (el && el.getBoundingClientRect) {
-        const rect = el.getBoundingClientRect()
-        materialStockDialogSourceRect.x = rect.left
-        materialStockDialogSourceRect.y = rect.top
-        materialStockDialogSourceRect.width = rect.width
-        materialStockDialogSourceRect.height = rect.height
-    }
-    clearMaterialStockForm()
-    materialStockForm.value = { ...row }
-    console.log(materialStockForm.value)
-    materialStockDialogVisible.value = true
-}
-
-// 用料表格行点击
-const handleMaterialUseRowClick = (row, column, event) => {
-    let el = event && event.target
-    while (el && el.tagName !== 'TR' && el.parentElement) {
-        el = el.parentElement
-    }
-    if (el && el.getBoundingClientRect) {
-        const rect = el.getBoundingClientRect()
-        materialUseDialogSourceRect.x = rect.left
-        materialUseDialogSourceRect.y = rect.top
-        materialUseDialogSourceRect.width = rect.width
-        materialUseDialogSourceRect.height = rect.height
-    }
-    clearMaterialUseForm()
-    materialUseIsAdd.value = false
-    materialUseDialogTitle.value = '用料信息'
-    materialUseForm.value = { ...row }
-    materialUseDialogVisible.value = true
-}
-
-// 膜用料表格行点击
-const handleFilmUseRowClick = (row, column, event) => {
-    let el = event && event.target
-    while (el && el.tagName !== 'TR' && el.parentElement) {
-        el = el.parentElement
-    }
-    if (el && el.getBoundingClientRect) {
-        const rect = el.getBoundingClientRect()
-        filmUseDialogSourceRect.x = rect.left
-        filmUseDialogSourceRect.y = rect.top
-        filmUseDialogSourceRect.width = rect.width
-        filmUseDialogSourceRect.height = rect.height
-    }
-    clearFilmUseForm()
-    filmUseIsAdd.value = false
-    filmUseDialogTitle.value = '膜用料信息'
-    filmUseForm.value = { ...row }
-    filmUseDialogVisible.value = true
-}
-
-// 膜进料表格行点击
-const handleFilmInRowClick = (row, column, event) => {
-    let el = event && event.target
-    while (el && el.tagName !== 'TR' && el.parentElement) {
-        el = el.parentElement
-    }
-    if (el && el.getBoundingClientRect) {
-        const rect = el.getBoundingClientRect()
-        filmInDialogSourceRect.x = rect.left
-        filmInDialogSourceRect.y = rect.top
-        filmInDialogSourceRect.width = rect.width
-        filmInDialogSourceRect.height = rect.height
-    }
-    clearFilmInForm()
-    filmInForm.value = { ...row }
-    filmInDialogVisible.value = true
-}
-
-const clearFilmInForm = () => {
-    filmInForm.value = {
-        inDate: dayjs().format('YYYY-MM-DD'),
-        filmId: null,
-        thickness: null,
-        spec: null,
-        weight: null,
-        unitPrice: null,
-        amount: null,
-        remark: ''
-    }
-}
-
-//库存新增弹窗确认按钮点击
-const handleSubmitMaterialStock = () => {
-    doBatchAddMaterialStock()
-}
-
-// 用料弹窗确认按钮点击
-const handleSubmitMaterialUse = async (formEl) => {
-    if (!formEl) return
-    try {
-        await formEl.validate()
-        if (materialUseIsAdd.value) {
-            doAddMaterialUse()
-        } else {
-            doUpdateMaterialUse()
-        }
-    } catch (err) {
-        return
-    }
-}
-
-// 膜用料弹窗确认按钮点击
-const handleSubmitFilmUse = async (formEl) => {
-    if (!formEl) return
-    try {
-        await formEl.validate()
-        if (filmUseIsAdd.value) {
-            doAddFilmUse()
-        } else {
-            doUpdateFilmUse()
-        }
-    } catch (err) {
-        return
-    }
-}
-
-// 用料计算按钮点击
-const handleCalcMaterialUse = () => {
-    materialUseCalcForm.value = { month: dayjs().format('YYYY-MM') }
-    const rect = getElementRect(calcMaterialUseBtnRef.value)
-    Object.assign(materialUseCalcDialogSourceRect, rect || defaultRect(240, 120))
-    materialUseCalcDialogVisible.value = true
-}
-
-// 膜用料计算按钮点击
-const handleCalcFilmUse = () => {
-    filmUseCalcForm.value = { month: dayjs().format('YYYY-MM') }
-    const rect = getElementRect(calcFilmUseBtnRef.value)
-    Object.assign(filmUseCalcDialogSourceRect, rect || defaultRect(240, 120))
-    filmUseCalcDialogVisible.value = true
-}
-
-// 材料弹窗删除按钮点击
-const handleDeleteMaterial = (name) => {
-    const rect = getElementRect(materialDelBtnRef.value)
-    confirmDialogRef.value.open({
-        message: `确定删除该材料"${name}"吗？`,
-        sourceRect: rect || defaultRect(200, 100),
-        onConfirm: doDeleteMaterial
-    })
-}
-
-// 膜类型管理按钮点击
-const handleFilmTypeManage = () => {
-    loadFilmList()
-    const rect = getElementRect(filmTypeManageBtnRef.value)
-    Object.assign(filmDialogSourceRect, rect || defaultRect(240, 120))
-    filmDialogVisible.value = true
 }
 
 const handleDeleteMaterialIn = () => {
@@ -955,149 +411,7 @@ const handleDeleteMaterialIn = () => {
     })
 }
 
-const handleDeleteMaterialStock = () => {
-    const rect = getElementRect(materialStockDelBtnRef.value)
-    confirmDialogRef.value.open({
-        message: `确定删除该库存吗？`,
-        sourceRect: rect || defaultRect(200, 100),
-        onConfirm: doDeleteMaterialStock
-    })
-}
-
-const handleSubmitMaterialUseCalc = (month) => {
-    if (!month) {
-        ElMessage.warning('请选择月份')
-        return
-    }
-    const rect = getElementRect(calcBtnRef.value)
-    confirmDialogRef.value.open({
-        message: `确定计算 ${month} 的用料吗？这将会删除该月的所有用料信息并重新计算`,
-        sourceRect: rect || defaultRect(200, 100),
-        onConfirm: doCalcMaterialUseByMonth,
-        confirmText: '确认计算'
-    })
-}
-
-const handleSubmitFilmUseCalc = (month) => {
-    if (!month) {
-        ElMessage.warning('请选择月份')
-        return
-    }
-    const rect = getElementRect(filmUseCalcBtnRef.value)
-    confirmDialogRef.value.open({
-        message: `确定计算 ${month} 的膜用料吗？这将会删除该月的所有膜用料信息并重新计算`,
-        sourceRect: rect || defaultRect(200, 100),
-        onConfirm: doCalcFilmUseByMonth,
-        confirmText: '确认计算'
-    })
-}
-
-// 用料删除按钮点击
-const handleDeleteMaterialUse = () => {
-    const rect = getElementRect(materialUseDelBtnRef.value)
-    confirmDialogRef.value.open({
-        message: `确定删除该用料吗？`,
-        sourceRect: rect || defaultRect(200, 100),
-        onConfirm: doDeleteMaterialUse
-    })
-}
-
-// 膜用料删除按钮点击
-const handleDeleteFilmUse = () => {
-    const rect = getElementRect(filmUseDelBtnRef.value)
-    confirmDialogRef.value.open({
-        message: `确定删除该用料吗？`,
-        sourceRect: rect || defaultRect(200, 100),
-        onConfirm: doDeleteFilmUse
-    })
-}
-
-const handleAddFilm = () => {
-    doAddFilm()
-}
-
-// 膜类型删除
-const handleDeleteFilm = (film, event) => { 
-    const rect = rectFromEvent(event)
-    confirmDialogRef.value.open({
-        message: `确定删除膜类型"${film.name}"吗？`,
-        sourceRect: rect,
-        onConfirm: () => doDeleteFilmById(film.id)
-    })
-}
-
-// 膜类型管理内编辑按钮点击
-const handleEditFilm = (film, event) => {
-    editFilmForm.value = { ...film  }
-    const rect = rectFromEvent(event, 200, 100)
-    Object.assign(editFilmDialogSourceRect, rect)
-    editFilmDialogVisible.value = true
-}
-
-const handleAddFilmIn = () => {
-    clearFilmInAddForm()
-    const rect = getElementRect(addFilmInBtnRef.value)
-    Object.assign(filmInAddDialogSourceRect, rect || defaultRect(240, 120))
-    filmInAddDialogVisible.value = true
-}
-
-const handleSubmitFilmIn = () => {
-    doBatchAddFilmIn()
-}
-
-const handleSaveFilmIn = async (formEl) => {
-    if (!formEl) return
-    try {
-        await formEl.validate()
-        doUpdateFilmIn()
-    } catch (err) {
-        return
-    }
-}
-
-const handleDeleteFilmIn = () => {
-    const rect = getElementRect(filmInDelBtnRef.value)
-    confirmDialogRef.value.open({
-        message: `确定删除该进料吗？`,
-        sourceRect: rect || defaultRect(200, 100),
-        onConfirm: doDeleteFilmIn
-    })
-
-}
-
-// 膜类型管理保存按钮点击
-const handleSaveFilm = async (formEl) => {
-    if (!formEl) return
-    try {
-        await formEl.validate()
-        doUpdateFilm()
-    } catch (err) {
-        return
-    }
-}
-
-// 网络请求：获取材料列表
-const loadMaterialList = async () => {
-    const res = await getMaterialList(materialName.value)
-    materialList.value = res.data
-}
-
-// 网络请求：新增材料
-const doAddMaterial = async () => {
-    await addMaterial(materialForm.value)
-    ElMessage.success('添加成功')
-    materialDialogVisible.value = false
-    loadMaterialList()
-}
-
-// 网络请求：修改材料
-const doUpdateMaterial = async () => {
-    await updateMaterial(materialForm.value)
-    ElMessage.success('修改成功')
-    materialDialogVisible.value = false
-    loadMaterialList()
-}
-
+// ---------- 6.4 网络请求 ----------
 // 网络请求：加载进料列表
 const loadMaterialInList = async() => {
     try {
@@ -1134,13 +448,170 @@ const doUpdateMaterialIn = async () => {
     loadMaterialInList()
 }
 
+// 网络请求：删除进料
+const doDeleteMaterialIn = async () => {
+    await deleteMaterialInById(materialInForm.value.id)
+    ElMessage.success('删除成功')
+    materialInDialogVisible.value = false
+    loadMaterialInList()
+}
+
+// ============================================================
+// 7. 材料库存模块（MaterialStock）
+// ============================================================
+// ---------- 7.1 响应式状态 ----------
+const materialStockFormRules = reactive({
+    month: [
+        { required: true, message: '请选择月份', trigger: 'change' }
+    ],
+    materialId: [
+        { required: true, message: '请选择材料', trigger: 'change' }
+    ],
+    quantity: [
+        { required: true, message: '请输入数量', trigger: 'change'}
+    ]
+})
+const materialStockTableLoading = ref(false)
+const materialStockTotal = ref(null)
+const materialStockList = ref([])
+const materialStockFormRef = ref(null)
+const materialStockParam = ref({
+    materialId: null,
+    month: '',
+    pageNum: 1,
+    pageSize: 10
+})
+const materialStockDialogVisible = ref(false)
+const materialStockDialogSourceRect = reactive({ x: 0, y: 0, width: 240, height: 120 })
+const materialStockForm = ref({
+    id: null,
+    month: '',
+    materialId: null,
+    quantity: null,
+    remark: ''
+})
+const materialStockBatchAddForm = ref([
+    {
+        month: dayjs().format('YYYY-MM-01'),
+        materialId: null,
+        quantity: null,
+        remark: ''
+    },
+])
+const materialStockAddDialogVisible = ref(false)
+const materialStockAddDialogSourceRect = reactive({ x: 0, y: 0, width: 240, height: 120 })
+const materialStockAddFormRules = reactive({
+    month: [
+        { required: true, message: '请选择月份', trigger: 'change' }
+    ],
+    materialId: [
+        { required: true, message: '请选择材料', trigger: 'change' }
+    ],
+    quantity: [
+        { required: true, message: '请输入数量', trigger: 'change'}
+    ],
+})
+const addMaterialStockBtnRef = ref(null)
+const materialStockDelBtnRef = ref(null)
+
+// ---------- 7.2 表单操作 ----------
+// 清空materialStockForm
+const clearMaterialStockForm = () => {
+    materialStockForm.value = {
+        id: null,
+        month: '',
+        materialId: null,
+        quantity: null,
+        remark: ''
+    }
+    if (materialStockFormRef.value) {
+        materialStockFormRef.value.clearValidate()
+    }
+}
+
+// 清空materialStockBatchAddForm
+const clearMaterialStockBatchAddForm = () => {
+    materialStockBatchAddForm.value = [
+        {
+            month: dayjs().format('YYYY-MM-01'),
+            materialId: null,
+            quantity: null,
+            remark: ''
+        },
+    ]
+}
+
+// ---------- 7.3 交互事件 ----------
+// 库存确认保存按钮点击
+const handleSaveMaterialStock = async (formEl) => {
+    if (!formEl) return
+    try {
+        await formEl.validate()
+        doUpdateMaterialStock()
+    } catch (err) {
+        return
+    }
+}
+
+// 点击新增月初库存按钮
+const handleAddMaterialStock = () => {
+    clearMaterialStockBatchAddForm()
+    const rect = getElementRect(addMaterialStockBtnRef.value)
+    Object.assign(materialStockAddDialogSourceRect, rect || defaultRect(240, 120))
+    materialStockAddDialogVisible.value = true
+}
+
+// 批量库存添加弹窗新增一行
+const materialStockAddDialogAddRow = () => {
+    materialStockBatchAddForm.value.push({
+        month: dayjs().format('YYYY-MM-01'),
+        materialId: null,
+        quantity: null,
+        remark: '',
+    })
+}
+
+// 库存表格行点击
+const handleMaterialStockRowClick = (row, column, event) => {
+    let el = event && event.target
+    while (el && el.tagName !== 'TR' && el.parentElement) {
+        el = el.parentElement
+    }
+    if (el && el.getBoundingClientRect) {
+        const rect = el.getBoundingClientRect()
+        materialStockDialogSourceRect.x = rect.left
+        materialStockDialogSourceRect.y = rect.top
+        materialStockDialogSourceRect.width = rect.width
+        materialStockDialogSourceRect.height = rect.height
+    }
+    clearMaterialStockForm()
+    materialStockForm.value = { ...row }
+    console.log(materialStockForm.value)
+    materialStockDialogVisible.value = true
+}
+
+// 库存新增弹窗确认按钮点击
+const handleSubmitMaterialStock = () => {
+    doBatchAddMaterialStock()
+}
+
+const handleDeleteMaterialStock = () => {
+    const rect = getElementRect(materialStockDelBtnRef.value)
+    confirmDialogRef.value.open({
+        message: `确定删除该库存吗？`,
+        sourceRect: rect || defaultRect(200, 100),
+        onConfirm: doDeleteMaterialStock
+    })
+}
+
+// ---------- 7.4 网络请求 ----------
 // 网络请求：加载库存列表
 const loadMaterialStockList = async () => {
     try {
         materialStockTableLoading.value = true
         const res = await getMaterialStockList(materialStockParam.value)
         materialStockTotal.value = res.data.total
-        materialStockList.value = res.data.rows 
+        materialStockList.value = res.data.rows
     } finally {
         materialStockTableLoading.value = false
     }
@@ -1162,22 +633,6 @@ const doBatchAddMaterialStock = async () => {
     loadMaterialStockList()
 }
 
-// 网络请求：删除材料
-const doDeleteMaterial = async () => {
-    await deleteMaterialById(materialForm.value.id)
-    ElMessage.success('删除成功')
-    materialDialogVisible.value = false
-    loadMaterialList()
-}
-
-// 网络请求：删除进料
-const doDeleteMaterialIn = async () => {
-    await deleteMaterialInById(materialInForm.value.id)
-    ElMessage.success('删除成功')
-    materialInDialogVisible.value = false
-    loadMaterialInList()
-}
-
 // 网络请求：删除库存
 const doDeleteMaterialStock = async () => {
     await deleteMaterialStockById(materialStockForm.value.id)
@@ -1186,6 +641,157 @@ const doDeleteMaterialStock = async () => {
     loadMaterialStockList()
 }
 
+// ============================================================
+// 8. 材料用料模块（MaterialUse）
+// ============================================================
+// ---------- 8.1 响应式状态 ----------
+const materialUseDelBtnRef = ref(null)
+const materialUseParam = ref({
+    materialId: null,
+    month: '',
+    pageNum: 1,
+    pageSize: 10,
+})
+const materialUseList = ref([])
+const materialUseTableLoading = ref(false)
+const materialUseTotal = ref(null)
+const calcMaterialUseBtnRef = ref(null)
+const materialUseIsAdd = ref(true)
+const addMaterialUseBtnRef = ref(null)
+const materialUseFormRef = ref(null)
+const materialUseDialogVisible = ref(false)
+const materialUseDialogTitle = ref('新增用料')
+const materialUseDialogSourceRect = reactive({ x: 0, y: 0, width: 240, height: 120 })
+const materialUseFormRules = reactive({
+    month: [
+        { required: true, message: '请选择月份', trigger: 'change' }
+    ],
+    materialId: [
+        { required: true, message: '请选择材料', trigger: 'change' }
+    ],
+    unitPrice: [
+        { required: true, message: '请输入单价', trigger: 'change' }
+    ],
+    quantity: [
+        { required: true, message: '请输入数量', trigger: 'change'}
+    ],
+    amount: [
+        { required: true, message: '请输入金额', trigger: 'change'}
+    ]
+})
+const materialUseForm = ref({
+    id: null,
+    month: '',
+    materialId: null,
+    unitPrice: null,
+    quantity: null,
+    amount: null,
+    remark: ''
+})
+const materialUseCalcDialogVisible = ref(false)
+const materialUseCalcDialogSourceRect = reactive({ x: 0, y: 0, width: 240, height: 120 })
+const materialUseCalcForm = ref({
+    month: dayjs().format('YYYY-MM'),
+})
+const calcBtnRef = ref(null)
+
+// ---------- 8.2 表单操作 ----------
+// 清空materialUseForm
+const clearMaterialUseForm = () => {
+    materialUseForm.value = {
+        id: null,
+        month: '',
+        materialId: null,
+        unitPrice: null,
+        quantity: null,
+        amount: null,
+        remark: ''
+    }
+    if (materialUseFormRef.value) {
+        materialUseFormRef.value.clearValidate()
+    }
+}
+
+// ---------- 8.3 交互事件 ----------
+// 点击新增用料按钮
+const handleAddMaterialUse = () => {
+    clearMaterialUseForm()
+    materialUseForm.value.month = dayjs().format('YYYY-MM-01')
+    materialUseDialogTitle.value = '新增用料'
+    materialUseIsAdd.value = true
+    const rect = getElementRect(addMaterialUseBtnRef.value)
+    Object.assign(materialUseDialogSourceRect, rect || defaultRect(240, 120))
+    materialUseDialogVisible.value = true
+}
+
+// 用料表格行点击
+const handleMaterialUseRowClick = (row, column, event) => {
+    let el = event && event.target
+    while (el && el.tagName !== 'TR' && el.parentElement) {
+        el = el.parentElement
+    }
+    if (el && el.getBoundingClientRect) {
+        const rect = el.getBoundingClientRect()
+        materialUseDialogSourceRect.x = rect.left
+        materialUseDialogSourceRect.y = rect.top
+        materialUseDialogSourceRect.width = rect.width
+        materialUseDialogSourceRect.height = rect.height
+    }
+    clearMaterialUseForm()
+    materialUseIsAdd.value = false
+    materialUseDialogTitle.value = '用料信息'
+    materialUseForm.value = { ...row }
+    materialUseDialogVisible.value = true
+}
+
+// 用料弹窗确认按钮点击
+const handleSubmitMaterialUse = async (formEl) => {
+    if (!formEl) return
+    try {
+        await formEl.validate()
+        if (materialUseIsAdd.value) {
+            doAddMaterialUse()
+        } else {
+            doUpdateMaterialUse()
+        }
+    } catch (err) {
+        return
+    }
+}
+
+// 用料计算按钮点击
+const handleCalcMaterialUse = () => {
+    materialUseCalcForm.value = { month: dayjs().format('YYYY-MM') }
+    const rect = getElementRect(calcMaterialUseBtnRef.value)
+    Object.assign(materialUseCalcDialogSourceRect, rect || defaultRect(240, 120))
+    materialUseCalcDialogVisible.value = true
+}
+
+const handleSubmitMaterialUseCalc = (month) => {
+    if (!month) {
+        ElMessage.warning('请选择月份')
+        return
+    }
+    const rect = getElementRect(calcBtnRef.value)
+    confirmDialogRef.value.open({
+        message: `确定计算 ${month} 的用料吗？这将会删除该月的所有用料信息并重新计算`,
+        sourceRect: rect || defaultRect(200, 100),
+        onConfirm: doCalcMaterialUseByMonth,
+        confirmText: '确认计算'
+    })
+}
+
+// 用料删除按钮点击
+const handleDeleteMaterialUse = () => {
+    const rect = getElementRect(materialUseDelBtnRef.value)
+    confirmDialogRef.value.open({
+        message: `确定删除该用料吗？`,
+        sourceRect: rect || defaultRect(200, 100),
+        onConfirm: doDeleteMaterialUse
+    })
+}
+
+// ---------- 8.4 网络请求 ----------
 // 网络请求：获取用料列表
 const loadMaterialUseList = async () => {
     try {
@@ -1207,7 +813,7 @@ const doCalcMaterialUseByMonth = async () => {
 }
 
 // 网络请求：添加用料
-const doAddMaterialUse = async () => { 
+const doAddMaterialUse = async () => {
     await addMaterialUse(materialUseForm.value)
     ElMessage.success('添加成功')
     materialUseDialogVisible.value = false
@@ -1215,7 +821,7 @@ const doAddMaterialUse = async () => {
 }
 
 // 网络请求：修改用料
-const doUpdateMaterialUse = async () => { 
+const doUpdateMaterialUse = async () => {
     await updateMaterialUse(materialUseForm.value)
     ElMessage.success('修改成功')
     materialUseDialogVisible.value = false
@@ -1223,15 +829,105 @@ const doUpdateMaterialUse = async () => {
 }
 
 // 网络请求：删除用料
-const doDeleteMaterialUse = async () => { 
+const doDeleteMaterialUse = async () => {
     await deleteMaterialUseById(materialUseForm.value.id)
     ElMessage.success('删除成功')
     materialUseDialogVisible.value = false
     loadMaterialUseList()
 }
 
+// ============================================================
+// 9. 膜模块（Film）
+// ============================================================
+// ---------- 9.1 响应式状态 ----------
+const filmList = ref([])
+const filmDialogVisible = ref(false)
+const filmDialogSourceRect = reactive({ x: 0, y: 0, width: 240, height: 120 })
+const newFilmForm = ref({
+    processId: null,
+    name: '',
+    scale: null,
+    remark: ''
+})
+const editFilmDialogVisible = ref(false)
+const editFilmDialogSourceRect = reactive({ x: 0, y: 0, width: 240, height: 120 })
+const editFilmForm = ref({
+    id: null,
+    processId: null,
+    name: '',
+    scale: null,
+    remark: ''
+})
+const editFilmFormRef = ref(null)
+const filmTypeManageBtnRef = ref(null)
+const editFilmFormRules = reactive({
+    processId: [
+        { required: true, message: '请选择关联工艺', trigger: 'change' }
+    ],
+    name: [
+        { required: true, message: '请输入膜名', trigger: 'change' }
+    ],
+    scale: [
+        { required: true, message: '请输入系数', trigger: 'change' }
+    ],
+})
+
+// ---------- 9.2 表单操作 ----------
+// 清空newFilmForm
+const clearNewFilmForm = () => {
+    newFilmForm.value = {
+        processId: null,
+        name: '',
+        scale: null,
+        remark: ''
+    }
+}
+
+// ---------- 9.3 交互事件 ----------
+// 膜类型管理按钮点击
+const handleFilmTypeManage = () => {
+    loadFilmList()
+    const rect = getElementRect(filmTypeManageBtnRef.value)
+    Object.assign(filmDialogSourceRect, rect || defaultRect(240, 120))
+    filmDialogVisible.value = true
+}
+
+const handleAddFilm = () => {
+    doAddFilm()
+}
+
+// 膜类型删除
+const handleDeleteFilm = (film, event) => {
+    const rect = rectFromEvent(event)
+    confirmDialogRef.value.open({
+        message: `确定删除膜类型"${film.name}"吗？`,
+        sourceRect: rect,
+        onConfirm: () => doDeleteFilmById(film.id)
+    })
+}
+
+// 膜类型管理内编辑按钮点击
+const handleEditFilm = (film, event) => {
+    editFilmForm.value = { ...film  }
+    const rect = rectFromEvent(event, 200, 100)
+    Object.assign(editFilmDialogSourceRect, rect)
+    editFilmDialogVisible.value = true
+}
+
+// 膜类型管理保存按钮点击
+const handleSaveFilm = async (formEl) => {
+    if (!formEl) return
+    try {
+        await formEl.validate()
+        doUpdateFilm()
+    } catch (err) {
+        return
+    }
+}
+
+// ---------- 9.4 网络请求 ----------
 // 网络请求：加载膜列表
-const loadFilmList = async () => { 
+const loadFilmList = async () => {
     const res = await getFilmList()
     filmList.value = res.data
 }
@@ -1259,8 +955,186 @@ const doDeleteFilmById = async (id) => {
     loadFilmList()
 }
 
+// ============================================================
+// 10. 膜进料模块（FilmIn）
+// ============================================================
+// ---------- 10.1 响应式状态 ----------
+const filmInParam = ref({
+    filmId: null,
+    thickness: null,
+    spec: null,
+    startDate: '',
+    endDate: '',
+    pageNum: 1,
+    pageSize: 10,
+    dateRange: '',
+})
+const filmInList = ref([])
+const filmInTableLoading = ref(false)
+const filmInTotal = ref(null)
+const filmInDialogVisible = ref(false)
+const filmInDialogSourceRect = reactive({ x: 0, y: 0, width: 240, height: 120 })
+const filmInFormRef = ref(null)
+const filmInForm = ref({
+    id: null,
+    inDate: dayjs().format('YYYY-MM-DD'),
+    filmId: null,
+    thickness: null,
+    spec: null,
+    weight: null,
+    unitPrice: null,
+    amount: null,
+    remark: ''
+})
+const filmInFormRules = reactive({
+    inDate: [
+        { required: true, message: '请输入进料日期', trigger: 'change' }
+    ],
+    filmId: [
+        { required: true, message: '请选择膜类型', trigger: 'change'}
+    ],
+    spec: [
+        { required: true, message: '请输入规格', trigger: 'change'}
+    ],
+    weight: [
+        { required: true, message: '请输入重量', trigger: 'change'}
+    ],
+    unitPrice: [
+        { required: true, message: '请输入单价', trigger: 'change'}
+    ],
+    amount: [
+        { required: true, message: '请输入金额', trigger: 'change'}
+    ],
+})
+const filmInAddForm = ref([
+    {
+        inDate: dayjs().format('YYYY-MM-DD'),
+        filmId: null,
+        thickness: null,
+        spec: null,
+        weight: null,
+        unitPrice: null,
+        amount: null,
+        remark: ''
+    },
+])
+const filmInAddDialogVisible = ref(false)
+const filmInAddDialogSourceRect = reactive({ x: 0, y: 0, width: 240, height: 120 })
+const addFilmInBtnRef = ref(null)
+const filmInDelBtnRef = ref(null)
+
+// ---------- 10.2 表单操作 ----------
+// 清空filmInParam
+const clearFilmInParam = () => {
+    filmInParam.value = {
+        filmId: null,
+        thickness: null,
+        spec: null,
+        startDate: '',
+        endDate: '',
+        pageNum: 1,
+        pageSize: 10,
+        dateRange: '',
+    }
+    loadFilmInList()
+}
+
+// 清空filmInForm
+const clearFilmInForm = () => {
+    filmInForm.value = {
+        inDate: dayjs().format('YYYY-MM-DD'),
+        filmId: null,
+        thickness: null,
+        spec: null,
+        weight: null,
+        unitPrice: null,
+        amount: null,
+        remark: ''
+    }
+}
+
+// 清空filmInAddForm
+const clearFilmInAddForm = () => {
+    filmInAddForm.value = [
+        {
+            inDate: dayjs().format('YYYY-MM-DD'),
+            filmId: null,
+            thickness: null,
+            spec: null,
+            weight: null,
+            unitPrice: null,
+            amount: null,
+            remark: ''
+        },
+    ]
+}
+
+// ---------- 10.3 交互事件 ----------
+// 膜进料表格行点击
+const handleFilmInRowClick = (row, column, event) => {
+    let el = event && event.target
+    while (el && el.tagName !== 'TR' && el.parentElement) {
+        el = el.parentElement
+    }
+    if (el && el.getBoundingClientRect) {
+        const rect = el.getBoundingClientRect()
+        filmInDialogSourceRect.x = rect.left
+        filmInDialogSourceRect.y = rect.top
+        filmInDialogSourceRect.width = rect.width
+        filmInDialogSourceRect.height = rect.height
+    }
+    clearFilmInForm()
+    filmInForm.value = { ...row }
+    filmInDialogVisible.value = true
+}
+
+const handleAddFilmIn = () => {
+    clearFilmInAddForm()
+    const rect = getElementRect(addFilmInBtnRef.value)
+    Object.assign(filmInAddDialogSourceRect, rect || defaultRect(240, 120))
+    filmInAddDialogVisible.value = true
+}
+
+// 批量膜进料弹窗新增一行
+const filmInAddDialogAddRow = () => {
+    filmInAddForm.value.push({
+        inDate: dayjs().format('YYYY-MM-DD'),
+        filmId: null,
+        thickness: null,
+        spec: null,
+        weight: null,
+        unitPrice: null,
+        amount: null,
+        remark: ''
+    })
+}
+
+const handleSubmitFilmIn = () => {
+    doBatchAddFilmIn()
+}
+
+const handleSaveFilmIn = async (formEl) => {
+    if (!formEl) return
+    try {
+        await formEl.validate()
+        doUpdateFilmIn()
+    } catch (err) {
+        return
+    }
+}
+
+const handleDeleteFilmIn = () => {
+    const rect = getElementRect(filmInDelBtnRef.value)
+    confirmDialogRef.value.open({
+        message: `确定删除该进料吗？`,
+        sourceRect: rect || defaultRect(200, 100),
+        onConfirm: doDeleteFilmIn
+    })
+}
+
+// ---------- 10.4 网络请求 ----------
 // 网络请求：加载膜进料列表
-const loadFilmInList = async () => { 
+const loadFilmInList = async () => {
     try {
         filmInTableLoading.value = true
         if(!filmInParam.value.dateRange){
@@ -1280,15 +1154,15 @@ const loadFilmInList = async () => {
 }
 
 // 网络请求：批量新增膜进料
-const doBatchAddFilmIn = async () => { 
+const doBatchAddFilmIn = async () => {
     await batchAddFilmIn(filmInAddForm.value)
     ElMessage.success('添加成功')
     loadFilmInList()
-    filmInAddDialogVisible.value = false  
+    filmInAddDialogVisible.value = false
 }
 
 // 网络请求：修改膜进料
-const doUpdateFilmIn = async () => { 
+const doUpdateFilmIn = async () => {
     await updateFilmIn(filmInForm.value)
     ElMessage.success('修改成功')
     loadFilmInList()
@@ -1296,19 +1170,164 @@ const doUpdateFilmIn = async () => {
 }
 
 // 网络请求：删除膜进料
-const doDeleteFilmIn = async () => { 
+const doDeleteFilmIn = async () => {
     await deleteFilmIdById(filmInForm.value.id)
     ElMessage.success('删除成功')
     loadFilmInList()
     filmInDialogVisible.value = false
 }
 
-// 网络请求：加载工艺列表
-const loadProcessList = async () => { 
-    const res = await getProcessList()
-    processList.value = res.data
+// ============================================================
+// 11. 膜用料模块（FilmUse）
+// ============================================================
+// ---------- 11.1 响应式状态 ----------
+const filmUseParam = ref({
+    filmId: null,
+    month: '',
+    pageNum: 1,
+    pageSize: 10,
+})
+const filmUseList = ref([])
+const filmUseTableLoading = ref(false)
+const filmUseTotal = ref(null)
+const filmUseDialogVisible = ref(false)
+const filmUseDialogTitle = ref('新增膜用料')
+const filmUseDialogSourceRect = reactive({ x: 0, y: 0, width: 240, height: 120 })
+const filmUseForm = ref({
+    id: null,
+    month: '',
+    filmId: null,
+    unitPrice: null,
+    quantity: null,
+    amount: null,
+    remark: ''
+})
+const filmUseFormRules = reactive({
+    month: [
+        { required: true, message: '请选择月份', trigger: 'change' }
+    ],
+    filmId: [
+        { required: true, message: '请选择电影', trigger: 'change' }
+    ],
+    unitPrice: [
+        { required: true, message: '请输入单价', trigger: 'change' }
+    ],
+    quantity: [
+        { required: true, message: '请输入数量', trigger: 'change'}
+    ],
+    amount: [
+        { required: true, message: '请输入金额', trigger: 'change'}
+    ]
+})
+const filmUseFormRef = ref(null)
+const filmUseCalcDialogVisible = ref(false)
+const filmUseCalcDialogSourceRect = reactive({ x: 0, y: 0, width: 240, height: 120 })
+const filmUseCalcForm = ref({
+    month: dayjs().format('YYYY-MM'),
+})
+const filmUseCalcBtnRef = ref(null)
+const addFilmUseBtnRef = ref(null)
+const filmUseIsAdd = ref(true)
+const filmUseDelBtnRef = ref(null)
+const calcFilmUseBtnRef = ref(null)
+
+// ---------- 11.2 表单操作 ----------
+// 清空filmUseForm
+const clearFilmUseForm = () => {
+    filmUseForm.value = {
+        id: null,
+        month: '',
+        filmId: null,
+        unitPrice: null,
+        quantity: null,
+        amount: null,
+        remark: ''
+    }
+    if (filmUseFormRef.value) {
+        filmUseFormRef.value.clearValidate()
+    }
 }
 
+// ---------- 11.3 交互事件 ----------
+// 点击新增膜用料按钮
+const handleAddFilmUse = () => {
+    clearFilmUseForm()
+    filmUseForm.value.month = dayjs().format('YYYY-MM-01')
+    filmUseDialogTitle.value = '新增膜用料'
+    filmUseIsAdd.value = true
+    const rect = getElementRect(addFilmUseBtnRef.value)
+    Object.assign(filmUseDialogSourceRect, rect || defaultRect(240, 120))
+    filmUseDialogVisible.value = true
+}
+
+// 膜用料表格行点击
+const handleFilmUseRowClick = (row, column, event) => {
+    let el = event && event.target
+    while (el && el.tagName !== 'TR' && el.parentElement) {
+        el = el.parentElement
+    }
+    if (el && el.getBoundingClientRect) {
+        const rect = el.getBoundingClientRect()
+        filmUseDialogSourceRect.x = rect.left
+        filmUseDialogSourceRect.y = rect.top
+        filmUseDialogSourceRect.width = rect.width
+        filmUseDialogSourceRect.height = rect.height
+    }
+    clearFilmUseForm()
+    filmUseIsAdd.value = false
+    filmUseDialogTitle.value = '膜用料信息'
+    filmUseForm.value = { ...row }
+    filmUseDialogVisible.value = true
+}
+
+// 膜用料弹窗确认按钮点击
+const handleSubmitFilmUse = async (formEl) => {
+    if (!formEl) return
+    try {
+        await formEl.validate()
+        if (filmUseIsAdd.value) {
+            doAddFilmUse()
+        } else {
+            doUpdateFilmUse()
+        }
+    } catch (err) {
+        return
+    }
+}
+
+// 膜用料计算按钮点击
+const handleCalcFilmUse = () => {
+    filmUseCalcForm.value = { month: dayjs().format('YYYY-MM') }
+    const rect = getElementRect(calcFilmUseBtnRef.value)
+    Object.assign(filmUseCalcDialogSourceRect, rect || defaultRect(240, 120))
+    filmUseCalcDialogVisible.value = true
+}
+
+const handleSubmitFilmUseCalc = (month) => {
+    if (!month) {
+        ElMessage.warning('请选择月份')
+        return
+    }
+    const rect = getElementRect(filmUseCalcBtnRef.value)
+    confirmDialogRef.value.open({
+        message: `确定计算 ${month} 的膜用料吗？这将会删除该月的所有膜用料信息并重新计算`,
+        sourceRect: rect || defaultRect(200, 100),
+        onConfirm: doCalcFilmUseByMonth,
+        confirmText: '确认计算'
+    })
+}
+
+// 膜用料删除按钮点击
+const handleDeleteFilmUse = () => {
+    const rect = getElementRect(filmUseDelBtnRef.value)
+    confirmDialogRef.value.open({
+        message: `确定删除该用料吗？`,
+        sourceRect: rect || defaultRect(200, 100),
+        onConfirm: doDeleteFilmUse
+    })
+}
+
+// ---------- 11.4 网络请求 ----------
 // 网络请求：获取膜用料列表
 const loadFilmUseList = async () => {
     try {
@@ -1321,7 +1340,7 @@ const loadFilmUseList = async () => {
     }
 }
 
-// 网络请求：计算用料
+// 网络请求：计算膜用料
 const doCalcFilmUseByMonth = async () => {
     await calcFilmUseByMonth(filmUseCalcForm.value.month)
     ElMessage.success('计算成功')
@@ -1329,37 +1348,57 @@ const doCalcFilmUseByMonth = async () => {
     loadFilmUseList()
 }
 
-// 网络请求：添加用料
-const doAddFilmUse = async () => { 
+// 网络请求：添加膜用料
+const doAddFilmUse = async () => {
     await addFilmUse(filmUseForm.value)
     ElMessage.success('添加成功')
     filmUseDialogVisible.value = false
     loadFilmUseList()
 }
 
-// 网络请求：修改用料
-const doUpdateFilmUse = async () => { 
+// 网络请求：修改膜用料
+const doUpdateFilmUse = async () => {
     await updateFilmUse(filmUseForm.value)
     ElMessage.success('修改成功')
     filmUseDialogVisible.value = false
     loadFilmUseList()
 }
 
-// 网络请求：删除用料
-const doDeleteFilmUse = async () => { 
+// 网络请求：删除膜用料
+const doDeleteFilmUse = async () => {
     await deleteFilmUseById(filmUseForm.value.id)
     ElMessage.success('删除成功')
     filmUseDialogVisible.value = false
     loadFilmUseList()
 }
 
+// ============================================================
+// 12. 工艺模块（Process）
+// ============================================================
+// 网络请求：加载工艺列表
+const loadProcessList = async () => {
+    const res = await getProcessList()
+    processList.value = res.data
+}
+
+// ============================================================
+// 13. 页面调度 & 生命周期
+// ============================================================
+// 动态加载页面
+const loadPage = (name) => {
+    if (name == 'first') loadMaterialList()
+    else if (name == 'second') loadMaterialInList()
+    else if (name == 'third') loadMaterialStockList()
+    else if (name == 'fourth') loadFilmInList()
+    else if (name == 'fifth') loadMaterialUseList()
+    else if (name == 'sixth') loadFilmUseList()
+}
 
 onMounted(() => {
     loadMaterialList()
     loadFilmList()
     loadProcessList()
 })
-
 </script>
 
 <template>
